@@ -1,6 +1,6 @@
 package osama.me.namegamekotlin
 
-data class Profiles(var profiles: List<Person>)
+import com.google.gson.annotations.SerializedName
 
 data class Person(var id: String,
                   var slug: String? = null,
@@ -8,8 +8,12 @@ data class Person(var id: String,
                   var jobTitle: String? = null,
                   var firstName: String? = null,
                   var lastName: String? = null,
-                  var headshot: Headshot? = null,
-                  var socialLinks: List<SocialLink>? = null)
+                  var headshot: Headshot,
+                  var socialLinks: List<SocialLink>? = null) {
+
+    val viewmodel: PersonViewModel
+        get() = PersonViewModel(id, "$firstName $lastName", socialLinks, headshot)
+}
 
 data class Headshot(var type: String? = null,
                     var mimeType: String? = null,
@@ -20,6 +24,26 @@ data class Headshot(var type: String? = null,
                     var width: Int? = null)
 
 
-data class SocialLink(var type: String? = null,
-                 var callToAction: String? = null,
-                 var url: String? = null)
+data class SocialLink(@SerializedName("type") var typeInString: String,
+                      var callToAction: String? = null,
+                      var url: String? = null) {
+
+    var SLtype: SocialLinkType? = null
+        get() = when (typeInString) {
+            "facebook" -> FacebookSocialLink
+            "twitter" -> TwitterSocialLink
+            "linkedin" -> LinkedInSocialLink
+            else -> NotKnownSocialLink ( typeInString )
+        }
+}
+
+
+sealed class SocialLinkType
+
+object FacebookSocialLink : SocialLinkType()
+object TwitterSocialLink : SocialLinkType()
+object LinkedInSocialLink : SocialLinkType()
+data class NotKnownSocialLink(val actual : String) : SocialLinkType()
+
+
+class PersonViewModel(val id: String, val name: String, val socialLinks: List<SocialLink>?, val headshot: Headshot)

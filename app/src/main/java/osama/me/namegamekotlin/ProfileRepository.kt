@@ -1,11 +1,11 @@
 package osama.me.namegamekotlin
 
-import io.reactivex.Flowable
+import retrofit2.Call
 
-class ProfileRepository{
-    fun profiles(): Flowable<List<Person>> = NameGameService.create().profiles()
+class ProfileRepository {
+    fun profiles(): Call<List<Person>> = NameGameService.create().profiles()
 
-    object ProfileRepositoryProvider{
+    object ProfileRepositoryProvider {
         fun provideProfileRepository() = ProfileRepository()
     }
 }
