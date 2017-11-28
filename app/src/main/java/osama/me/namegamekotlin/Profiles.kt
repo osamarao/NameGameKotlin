@@ -18,10 +18,14 @@ data class Person(var id: String,
 data class Headshot(var type: String? = null,
                     var mimeType: String? = null,
                     var id: String? = null,
-                    var url: String? = null,
+                    @SerializedName("url")
+                    private var url_: String?,
                     var alt: String? = null,
                     var height: Int? = null,
-                    var width: Int? = null)
+                    var width: Int? = null) {
+    var trueUrl: String = ""
+        get() = "http:${url_ ?: "placeholder"}"
+}
 
 
 data class SocialLink(@SerializedName("type") var typeInString: String,
@@ -33,7 +37,7 @@ data class SocialLink(@SerializedName("type") var typeInString: String,
             "facebook" -> FacebookSocialLink
             "twitter" -> TwitterSocialLink
             "linkedin" -> LinkedInSocialLink
-            else -> NotKnownSocialLink ( typeInString )
+            else -> NotKnownSocialLink(typeInString)
         }
 }
 
@@ -43,7 +47,7 @@ sealed class SocialLinkType
 object FacebookSocialLink : SocialLinkType()
 object TwitterSocialLink : SocialLinkType()
 object LinkedInSocialLink : SocialLinkType()
-data class NotKnownSocialLink(val actual : String) : SocialLinkType()
+data class NotKnownSocialLink(val actual: String) : SocialLinkType()
 
 
 class PersonViewModel(val id: String, val name: String, val socialLinks: List<SocialLink>?, val headshot: Headshot)

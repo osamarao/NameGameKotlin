@@ -2,19 +2,19 @@ package osama.me.namegamekotlin
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import java.util.*
 
 
 class MainActivity : AppCompatActivity() {
 
     val container by lazyFindView<ViewGroup>(R.id.face_container)
     val xtext by lazyFindView<TextView>(R.id.xtext)
+
+    private var pairs: ArrayList<Pair<PersonViewModel, ImageView>> = arrayListOf()
+    private var targetPair: Pair<PersonViewModel, ImageView>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,58 +24,37 @@ class MainActivity : AppCompatActivity() {
 
         container.forEachChild {
             faces.add(it as ImageView)
+            it.setOnClickListener {
+                if ((it as ImageView).pair == targetPair){
+                    it.visibility = View.GONE
+                    pairs.remove(targetPair!!)
+                    setTarget()
+                } else {
+                    it.shake()
+                }
+
+            }
         }
 
-        ProfileRepository.ProfileRepositoryProvider.provideProfileRepository().profiles().exec(response = { people ->
-            people.let { pickRandomFive(it) }.map { it.viewmodel }.zip(faces).forEach {
-                it.second.loadUrl(it.first.headshot.url!!)
+        ProfileRepository.ProfileRepositoryProvider.provideProfileRepository().profiles().exec({ people ->
+            people.let { pickRandomN(it, 5) }.map { it.viewmodel }.zip(faces).onEach { pairs.add(it) }.forEach {
+                it.second.apply { setSize(dpToPixel(100f), dpToPixel(100f)) }.loadUrl(it.first.headshot.trueUrl)
+                it.second.pair = it // ???
             }
-        }, error = { error ->
+            setTarget()
+        }, { error ->
             logDebug { error.message }
         })
-        ProfileRepository.ProfileRepositoryProvider.provideProfileRepository().profiles().enqueue(object : Callback<List<Person>> {
-            override fun onResponse(call: Call<List<Person>>?, response: Response<List<Person>>?) {
-                if (response?.body() != null && response.isSuccessful) {
-                    response.body().let { pickRandomFive(it) }.map { it.viewmodel }.zip(faces).forEach {
-                        it.first.socialLinks?.map { it.SLtype }
-                                ?.map {
-                                    when (it) {
-                                        FacebookSocialLink -> "FACEBOOK"
-                                        TwitterSocialLink -> "TWITTER"
-                                        LinkedInSocialLink -> "Linked In"
-                                        is NotKnownSocialLink -> it.actual
-                                        null -> "null"
-                                    }
-                                }
-                                ?.forEach {
-                                    logDebug { it }
-                                }
-                    }
-                }
-            }
-
-            override fun onFailure(call: Call<List<Person>>?, t: Throwable?) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-        })
-
-
     }
 
 
-    fun pickRandomFive(list: List<Person>?): List<Person> {
-        if (list == null) {
-            return Collections.emptyList()
+    private fun setTarget() {
+        if ( !pairs.isEmpty()){
+            targetPair = pickRandomN(pairs, 1)[0]
+        } else {
+            targetPair = null
         }
-        val persons = arrayListOf<Person>()
-        var count = 0
-        while (count <= 5) {
-            persons.add(list[Random().nextInt(list.size)])
-            count++
-        }
-        return persons
+        xtext.text = targetPair?.first?.name ?: "No Target"
     }
-
 
 }
-

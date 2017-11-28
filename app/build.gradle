@@ -20,6 +20,22 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    flavorDimensions "singleDim"
+
+    productFlavors{
+        red{
+            dimension "singleDim"
+            applicationIdSuffix ".red"
+        }
+
+        blue{
+            dimension "singleDim"
+            applicationIdSuffix ".blue"
+        }
+    }
+
+
 }
 
 dependencies {
