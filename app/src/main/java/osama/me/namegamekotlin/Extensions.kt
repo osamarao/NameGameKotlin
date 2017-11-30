@@ -51,7 +51,6 @@ fun ImageView.setSize(height: Int, width: Int) {
     layoutParams = LinearLayout.LayoutParams(width, height)
 }
 var ImageView.pair: Pair<PersonViewModel, ImageView>
-    // noinspection Constant Conditions
     get() = tag as Pair<PersonViewModel, ImageView>
     set(value) {
         tag = value

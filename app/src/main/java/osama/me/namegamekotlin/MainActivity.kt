@@ -10,8 +10,8 @@ import android.widget.TextView
 
 class MainActivity : AppCompatActivity() {
 
-    val container by lazyFindView<ViewGroup>(R.id.face_container)
-    val xtext by lazyFindView<TextView>(R.id.xtext)
+    private val container by lazyFindView<ViewGroup>(R.id.face_container)
+    private val xtext by lazyFindView<TextView>(R.id.xtext)
 
     private var pairs: ArrayList<Pair<PersonViewModel, ImageView>> = arrayListOf()
     private var targetPair: Pair<PersonViewModel, ImageView>? = null
@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity() {
         container.forEachChild {
             faces.add(it as ImageView)
             it.setOnClickListener {
-                if ((it as ImageView).pair == targetPair){
+                if ((it as ImageView).pair == targetPair) {
                     it.visibility = View.GONE
                     pairs.remove(targetPair!!)
                     setTarget()
@@ -49,7 +49,7 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun setTarget() {
-        if ( !pairs.isEmpty()){
+        if (!pairs.isEmpty()) {
             targetPair = pickRandomN(pairs, 1)[0]
         } else {
             targetPair = null
