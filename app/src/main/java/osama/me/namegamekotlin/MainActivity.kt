@@ -18,7 +18,7 @@ class MainActivity : AppCompatActivity(), SimpleStore.Listener<MainState> {
     private var pairs: ArrayList<Pair<PersonViewModel, ImageView>> = arrayListOf()
     private var targetPair: Pair<PersonViewModel, ImageView>? = null
 
-    var mainStore : MainStore = MainStore(,)
+    val mainStore = MainStore.instance.store
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,6 +61,15 @@ class MainActivity : AppCompatActivity(), SimpleStore.Listener<MainState> {
     }
 
 
+    override fun onStart() {
+        super.onStart()
+        mainStore.addListener(this)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        mainStore.removeListener(this)
+    }
 
     override fun onNewState(state: MainState?) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.

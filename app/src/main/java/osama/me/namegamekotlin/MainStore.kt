@@ -32,7 +32,7 @@ class MainStore(val store: SimpleStore<MainState>, val dispatcher: Dispatcher<Ac
 
 interface Action
 
-class SomeAction (var pair: Pair<PersonViewModel, ImageView> ): Action
+class PairRemovedAction(var pair: Pair<PersonViewModel, ImageView> ): Action
 
 val mainStore: SimpleStore<MainState> = SimpleStore(MainState(arrayListOf()))
 
@@ -40,17 +40,15 @@ val dispatcher: Dispatcher<Action, Action> = Dispatcher.forStore(MainStore.insta
 
 
 fun mainReducer(): Reducer<Action, MainState> {
-    return Reducers.matchClass<Action, MainState>().`when`(SomeAction::class.java, specificReducer())
+    return Reducers.matchClass<Action, MainState>().`when`(PairRemovedAction::class.java, specificReducer())
 }
 
 
-fun specificReducer(): Reducer<SomeAction, MainState> {
+fun specificReducer(): Reducer<PairRemovedAction, MainState> {
     return Reducer { action, state -> removePairFromState(action.pair, state) }
 }
 
 fun removePairFromState(  pairToBeRemoved: Pair<PersonViewModel, ImageView>,  state : MainState) : MainState{
-
     state.pairs.remove(pairToBeRemoved)
-
     return state.copy(pairs = state.pairs)
 }
