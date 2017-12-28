@@ -6,9 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import me.tatarka.redux.SimpleStore
 
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), SimpleStore.Listener<MainState> {
+
 
     private val container by lazyFindView<ViewGroup>(R.id.face_container)
     private val xtext by lazyFindView<TextView>(R.id.xtext)
@@ -16,10 +18,11 @@ class MainActivity : AppCompatActivity() {
     private var pairs: ArrayList<Pair<PersonViewModel, ImageView>> = arrayListOf()
     private var targetPair: Pair<PersonViewModel, ImageView>? = null
 
+    var mainStore : MainStore = MainStore(,)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
         val faces = ArrayList<ImageView>(5)
 
         container.forEachChild {
@@ -55,6 +58,12 @@ class MainActivity : AppCompatActivity() {
             targetPair = null
         }
         xtext.text = targetPair?.first?.name ?: "No Target"
+    }
+
+
+
+    override fun onNewState(state: MainState?) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
 }
