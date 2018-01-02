@@ -50,4 +50,4 @@ object LinkedInSocialLink : SocialLinkType()
 data class NotKnownSocialLink(val actual: String) : SocialLinkType()
 
 
-class PersonViewModel(val id: String, val name: String, val socialLinks: List<SocialLink>?, val headshot: Headshot)
+data class PersonViewModel(val id: String, val name: String, val socialLinks: List<SocialLink>?, val headshot: Headshot)

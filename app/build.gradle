@@ -62,4 +62,7 @@ dependencies {
     implementation "io.reactivex.rxjava2:rxandroid:2.0.1"
 
     implementation 'com.squareup.picasso:picasso:2.5.2'
+
+    // reKotlin
+    implementation 'tw.geothings.rekotlin:rekotlin:0.1.0-SNAPSHOT'
 }
