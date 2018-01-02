@@ -1,7 +1,5 @@
 package osama.me.namegamekotlin
 
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
@@ -17,10 +15,7 @@ interface NameGameService {
                 = Retrofit.Builder()
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create())
-                .client(OkHttpClient.Builder().
-                        addInterceptor(HttpLoggingInterceptor()
-                                .setLevel(HttpLoggingInterceptor.Level.BODY))
-                        .build())
+//                .client(OkHttpClient.Builder().addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)).build())
                 .baseUrl("https://www.willowtreeapps.com/api/v1.0/")
                 .build()
                 .create(NameGameService::class.java)

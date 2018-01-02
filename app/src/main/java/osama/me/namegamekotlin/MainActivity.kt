@@ -6,23 +6,21 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import me.tatarka.redux.SimpleStore
+import tw.geothings.rekotlin.Store
+import tw.geothings.rekotlin.StoreSubscriber
 
-
-class MainActivity : AppCompatActivity(), SimpleStore.Listener<MainState> {
-
+class MainActivity : AppCompatActivity(), StoreSubscriber<AppState> {
 
     private val container by lazyFindView<ViewGroup>(R.id.face_container)
     private val xtext by lazyFindView<TextView>(R.id.xtext)
 
-    private var pairs: ArrayList<Pair<PersonViewModel, ImageView>> = arrayListOf()
+    //        private var pairs_: ArrayList<Pair<PersonViewModel, ImageView>> = arrayListOf()
     private var targetPair: Pair<PersonViewModel, ImageView>? = null
-
-    val mainStore = MainStore.instance.store
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
         val faces = ArrayList<ImageView>(5)
 
         container.forEachChild {
@@ -30,49 +28,44 @@ class MainActivity : AppCompatActivity(), SimpleStore.Listener<MainState> {
             it.setOnClickListener {
                 if ((it as ImageView).pair == targetPair) {
                     it.visibility = View.GONE
-                    pairs.remove(targetPair!!)
-                    setTarget()
+                    mainStore.dispatch(RemovePairAction(it.pair))
                 } else {
                     it.shake()
                 }
 
             }
         }
-
-        ProfileRepository.ProfileRepositoryProvider.provideProfileRepository().profiles().exec({ people ->
-            people.let { pickRandomN(it, 5) }.map { it.viewmodel }.zip(faces).onEach { pairs.add(it) }.forEach {
-                it.second.apply { setSize(dpToPixel(100f), dpToPixel(100f)) }.loadUrl(it.first.headshot.trueUrl)
-                it.second.pair = it // ???
-            }
-            setTarget()
-        }, { error ->
-            logDebug { error.message }
-        })
+        mainStore.subscribe(this)
+        profilePairsActionCreator(faces, this)
     }
 
-
-    private fun setTarget() {
-        if (!pairs.isEmpty()) {
-            targetPair = pickRandomN(pairs, 1)[0]
+    private fun setTarget(pairs: List<Pair<PersonViewModel, ImageView>>) {
+        targetPair = if (!pairs.isEmpty()) {
+            pickRandomN(pairs, 1)[0]
         } else {
-            targetPair = null
+            null
         }
         xtext.text = targetPair?.first?.name ?: "No Target"
     }
 
 
-    override fun onStart() {
-        super.onStart()
-        mainStore.addListener(this)
+    override fun newState(state: AppState) {
+        state.pairs.forEach {
+            logDebug { it.first.name }
+            it.second.apply { setSize(dpToPixel(100f), dpToPixel(100f)) }.loadUrl(it.first.headshot.trueUrl)
+            it.second.pair = it // add to tag of imageview
+        }
+        setTarget(state.pairs)
     }
 
     override fun onStop() {
         super.onStop()
-        mainStore.removeListener(this)
-    }
-
-    override fun onNewState(state: MainState?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        mainStore.unsubscribe(this)
     }
 
 }
+
+val mainStore = Store(
+        reducer = ::pairReducer,
+        state = null
+)
