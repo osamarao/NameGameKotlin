@@ -44,7 +44,7 @@ fun ImageView.loadUrl(url: String) {
         if (BuildConfig.DEBUG) {
             isLoggingEnabled = false
         }
-    }.load(url).transform(CircleBorderTransform()).placeholder(R.mipmap.ic_launcher).into(this)
+    }.load(url).transform(CircleBorderTransform()).placeholder(R.mipmap.ic_launcsher).into(this)
 }
 
 fun ImageView.setSize(height: Int, width: Int) {
