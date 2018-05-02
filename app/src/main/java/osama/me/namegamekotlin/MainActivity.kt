@@ -14,8 +14,7 @@ class MainActivity : AppCompatActivity(), StoreSubscriber<AppState> {
     private val container by lazyFindView<ViewGroup>(R.id.face_container)
     private val xtext by lazyFindView<TextView>(R.id.xtext)
 
-    //        private var pairs_: ArrayList<Pair<PersonViewModel, ImageView>> = arrayListOf()
-    private var targetPair: Pair<PersonViewModel, ImageView>? = null
+    private var  targetPair: Pair<PersonViewModel, ImageView>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,6 +65,6 @@ class MainActivity : AppCompatActivity(), StoreSubscriber<AppState> {
 }
 
 val mainStore = Store(
-        reducer = ::pairReducer,
+        reducer = ::reducer,
         state = null
 )

@@ -12,10 +12,16 @@ data class AppState(val pairs: ArrayList<Pair<PersonViewModel, ImageView>> = arr
 data class ReplacePairsAction(val pairs: List<Pair<PersonViewModel, ImageView>>) : Action
 data class RemovePairAction(val pair: Pair<PersonViewModel, ImageView>) : Action
 
-fun pairReducer(action: Action, state: AppState?): AppState {
+val reducers: List<(Action, AppState?) -> AppState> = listOf(::someReducer)
 
+fun reducer(action: Action, state: AppState?): AppState {
+
+    val result: AppState? = reducers.fold(state, { acc: AppState?, reduceFunction: (Action, AppState?) -> AppState -> reduceFunction(action, acc) })
+    return result!!
+}
+
+fun someReducer(action: Action, state: AppState?): AppState {
     var stateInternal = state ?: AppState()
-
     when (action) {
         is ReplacePairsAction -> {
             if (state != null) {
@@ -30,5 +36,6 @@ fun pairReducer(action: Action, state: AppState?): AppState {
             }
         }
     }
+
     return stateInternal
 }
